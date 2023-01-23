@@ -56,6 +56,11 @@ class SiteActivity : AppCompatActivity() {
                     toast = Toast.makeText(this,it.eventArgs.toString(),Toast.LENGTH_LONG)
                     toast!!.show()
                 }
+                "click_bet" -> {
+                    onClickBet(it)
+                    toast = Toast.makeText(this,it.eventArgs.toString(),Toast.LENGTH_LONG)
+                    toast!!.show()
+                }
                 "confirm_bet" -> {
                     confirmBet()
                 }
@@ -74,6 +79,11 @@ class SiteActivity : AppCompatActivity() {
                 runOnUiThread {
                     masterStatus!!.text = "Loaded!"
                 }
+                webView!!.evaluateJavascript(betSite!!.eventListenerScript()) {
+                    runOnUiThread {
+                        masterStatus!!.text = it
+                    }
+                }
             }
         }
         model!!.createConnection(sharedPref!!)
@@ -83,6 +93,7 @@ class SiteActivity : AppCompatActivity() {
         @JavascriptInterface
         fun performClick(target: String){
             Log.d("WEBVIEW",target)
+            model!!.sendCommand(AutomationObject("bet","click_bet", arrayOf(target)))
         }
     }
 
@@ -94,6 +105,11 @@ class SiteActivity : AppCompatActivity() {
                 masterStatus!!.text = it
             }
         }
+    }
+
+    private fun onClickBet(automationEvents: AutomationEvents) {
+        val betindex = automationEvents.eventArgs[0]
+        Log.d("AUTOMATION",betindex.toString())
     }
 
     private fun placeBet(automationEvents: AutomationEvents) {

@@ -84,4 +84,31 @@ class BetSite(val name: String = "laser247.com") {
             }
         }
     }
+    fun eventListenerScript(): String {
+        when(name){
+            "laser247.com" -> {
+                return "document.querySelectorAll(\".odds_body button\").forEach((item)=>{\n" +
+                        "    item.addEventListener(\"click\",(event)=>{\n" +
+                        "    var itemb = event.target\n" +
+                        "    document.querySelectorAll(\".odds_body button\").forEach((itema,index,arr)=>{\n" +
+                        "        if(itema==itemb){\n" +
+                        "            lambo.performClick(index)\n" +
+                        "        }\n" +
+                        "    })\n" +
+                        "})})"
+            }
+            else -> {
+                return "document.querySelectorAll(\".odds_body button\").forEach((item)=>{\n" +
+                        "    item.addEventListener(\"click\",(event)=>{\n" +
+                        "    console.log(event)\n" +
+                        "    var itemb = event.target\n" +
+                        "    document.querySelectorAll(\".odds_body button\").forEach((itema,index,arr)=>{\n" +
+                        "        if(itema==itemb){\n" +
+                        "            lambo.performClick(index)\n" +
+                        "        }\n" +
+                        "    })\n" +
+                        "})})"
+            }
+        }
+    }
 }
