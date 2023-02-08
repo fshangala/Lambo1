@@ -15,6 +15,7 @@ class LamboViewModel : ViewModel() {
     var browserLoading = MutableLiveData<Boolean>(false)
     var oddButtons = MutableLiveData<Int>(0)
     var currentBetIndex = MutableLiveData<String>("")
+    var currentBetIndexOdds = MutableLiveData<String>("")
     var jslog = MutableLiveData<String>("")
 
     fun createConnection(sharedPref: SharedPreferences){

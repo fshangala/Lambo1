@@ -1,7 +1,5 @@
 package com.fshangala.lambo1
 
-import android.content.Context
-
 class BetSite(val name: String = "laser247.com") {
     val sites = arrayOf<String>(
         "laser247.com",
@@ -137,6 +135,7 @@ class BetSite(val name: String = "laser247.com") {
                         "    console.log(selected.getAttribute(\"lambolistenning\"));\n" +
                         "    window.lambo.buttonCount(targetElements.length);\n" +
                         "    window.lambo.performClick(selected.getAttribute(\"lambolistenning\"));\n" +
+                        "    window.lambo.getOdds(selected.firstChild.firstChild.innerText);\n" +
                         "}\n" +
                         "function checkElements(){\n" +
                         "    targetElements = document.querySelectorAll(\".SportEvent__market .odd-button\")\n" +
