@@ -1,10 +1,13 @@
 package com.fshangala.lambo1
 
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.KeyEvent
+import android.view.Menu
+import android.view.MenuItem
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -190,5 +193,41 @@ class SiteActivity : AppCompatActivity() {
             }
         }
         return true
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.lambomenu,menu)
+
+        model!!.connected.observe(this){
+            if (it){
+                menu.getItem(1).setIcon(R.mipmap.reset_green_round)
+            } else {
+                menu.getItem(1).setIcon(R.mipmap.reset_red_round)
+            }
+        }
+
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.preferencesBtn -> {
+                openConfig()
+            }
+
+            R.id.reconnectBtn -> {
+                model!!.createConnection(sharedPref!!)
+            }
+
+            R.id.reloadBrowserBtn -> {
+                webView!!.reload()
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun openConfig(){
+        val intent = Intent(this,ConfigActivity::class.java)
+        startActivity(intent)
     }
 }
