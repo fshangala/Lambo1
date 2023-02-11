@@ -15,6 +15,6 @@
     <item
         android:id="@+id/preferencesBtn"
         android:icon="@android:drawable/ic_menu_preferences"
-        android:title="@string/title_activity_config"
+        android:title="Config"
         app:showAsAction="ifRoom" />
 </menu>
