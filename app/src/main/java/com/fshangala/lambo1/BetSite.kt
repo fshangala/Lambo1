@@ -52,17 +52,10 @@ class BetSite(val name: String = "laser247.com") {
                         setodds
             }
             "lotus365.com" -> {
-                var setodds = ""
-                if (odds != 0.0) {
-                    setodds = "\nnativeInputValueSetter.call(inputOdds, '$odds');\n" +
-                            "inputOdds.dispatchEvent(ev1);\n" +
-                            "inputOdds.dispatchEvent(ev2);"
-                }
-                return "var betRows = document.querySelectorAll(\".SportEvent__market\")\n" +
-                        "var inputElements = document.querySelectorAll(\"ion-input input\")\n" +
-                        "inputElements[1].value = $stake\n" +
-                        "inputElements[1].dispatchEvent(new Event('input', { bubbles: true}));\n" +
-                        "inputElements[1].dispatchEvent(new Event('change', { bubbles: true}));"
+                return "var inputElement = document.querySelector(\".SportEvent__market ion-input input\")\n" +
+                        "inputElement.value = $stake\n" +
+                        "inputElement.dispatchEvent(new Event('input', { bubbles: true}));\n" +
+                        "inputElement.dispatchEvent(new Event('change', { bubbles: true}));"
             }
             else -> {
                 var setodds = ""

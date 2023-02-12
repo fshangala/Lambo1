@@ -150,7 +150,7 @@ class SiteActivity : AppCompatActivity() {
     }
 
     private fun onClickBet(automationEvents: AutomationEvents) {
-        placeBet()
+        model!!.sendCommand(AutomationObject("bet","place_bet", arrayOf()))
     }
 
     private fun placeBet() {
