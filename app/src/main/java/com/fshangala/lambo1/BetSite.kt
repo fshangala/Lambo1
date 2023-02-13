@@ -35,14 +35,14 @@ class BetSite(val name: String = "laser247.com") {
             "laser247.com" -> {
                 var setodds = ""
                 if (odds != 0.0) {
-                    setodds = "\nnativeInputValueSetter.call(inputOdds, '$odds');\n" +
-                            "inputOdds.dispatchEvent(ev1);\n" +
-                            "inputOdds.dispatchEvent(ev2);"
+                    setodds = "inputElements[0].value = $odds\n" +
+                            "inputElements[0].dispatchEvent(new Event('input', { bubbles: true}));\n" +
+                            "inputElements[0].dispatchEvent(new Event('change', { bubbles: true}));"
                 }
-                return "var inputElements = document.querySelectorAll(\"app-bet-slip input\")\n" +
-                        "inputElements[2].value = 200\n" +
+                return "var inputElements = document.querySelectorAll(\".odds_body app-bet-slip input\")\n" +
+                        "inputElements[2].value = $stake\n" +
                         "inputElements[2].dispatchEvent(new Event('input', { bubbles: true}));\n" +
-                        "inputElements[2].dispatchEvent(new Event('change', { bubbles: true}));" +
+                        "inputElements[2].dispatchEvent(new Event('change', { bubbles: true}));\n" +
                         setodds
             }
             "lotus365.com" -> {
@@ -60,14 +60,14 @@ class BetSite(val name: String = "laser247.com") {
             else -> {
                 var setodds = ""
                 if (odds != 0.0) {
-                    setodds = "\nnativeInputValueSetter.call(inputOdds, '$odds');\n" +
-                            "inputOdds.dispatchEvent(ev1);\n" +
-                            "inputOdds.dispatchEvent(ev2);"
+                    setodds = "inputElements[0].value = $odds\n" +
+                            "inputElements[0].dispatchEvent(new Event('input', { bubbles: true}));\n" +
+                            "inputElements[0].dispatchEvent(new Event('change', { bubbles: true}));"
                 }
-                return "var inputElements = document.querySelectorAll(\"app-bet-slip input\")\n" +
-                        "inputElements[2].value = 200\n" +
+                return "var inputElements = document.querySelectorAll(\".odds_body app-bet-slip input\")\n" +
+                        "inputElements[2].value = $stake\n" +
                         "inputElements[2].dispatchEvent(new Event('input', { bubbles: true}));\n" +
-                        "inputElements[2].dispatchEvent(new Event('change', { bubbles: true}));" +
+                        "inputElements[2].dispatchEvent(new Event('change', { bubbles: true}));\n" +
                         setodds
             }
         }
@@ -75,13 +75,13 @@ class BetSite(val name: String = "laser247.com") {
     fun comfirmBetScript(betIndex: Int): String {
         when(name){
             "laser247.com" -> {
-                return "document.querySelector(\"app-bet-slip button.btn-betplace\").click();"
+                return "document.querySelectorAll(\".odds_body .btn-betplace\")[1].click();"
             }
             "lotus365.com" -> {
                 return "document.querySelector(\".BetPlacing__btn--place\").click();"
             }
             else -> {
-                return "document.querySelector(\"app-bet-slip button.btn-betplace\").click();"
+                return "document.querySelectorAll(\".odds_body .btn-betplace\")[1].click();"
             }
         }
     }
