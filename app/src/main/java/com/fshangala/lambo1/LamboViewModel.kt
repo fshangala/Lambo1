@@ -1,6 +1,7 @@
 package com.fshangala.lambo1
 
 import android.content.SharedPreferences
+import android.os.Build
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import okhttp3.*
@@ -32,7 +33,8 @@ class LamboViewModel : ViewModel() {
             appClient.newWebSocket(appRequest,object: WebSocketListener(){
                 override fun onOpen(webSocket: WebSocket, response: Response) {
                     appSocket = webSocket
-                    webSocket.send("{\"event_type\":\"connection\",\"event\":\"phone_connected\",\"args\":[],\"kwargs\":{}}")
+                    val devicetype = "Brand:${Build.BRAND};Model:${Build.MODEL};Android:${Build.VERSION.RELEASE}"
+                    webSocket.send("{\"event_type\":\"connection\",\"event\":\"phone_connected\",\"args\":[${devicetype}],\"kwargs\":{}}")
                     connectionStatus.postValue("Connected!")
                     connected.postValue(true)
                 }
