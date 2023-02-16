@@ -1,18 +1,19 @@
 package com.fshangala.lambo1
 
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Bitmap
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Handler
-import android.util.Log
 import android.view.KeyEvent
+import android.view.Menu
+import android.view.MenuItem
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import java.util.*
 
@@ -40,7 +41,7 @@ class SiteActivity : AppCompatActivity() {
         model = ViewModelProvider(this)[LamboViewModel::class.java]
         sharedPref = getSharedPreferences("MySettings", Context.MODE_PRIVATE)
         masterStatus = findViewById(R.id.status)
-        oddStatus = findViewById<TextView>(R.id.odd)
+        oddStatus = findViewById(R.id.odd)
 
         betSite = BetSite(sharedPref!!.getString("betSite","laser247.com")!!)
         startBrowser()
@@ -86,23 +87,38 @@ class SiteActivity : AppCompatActivity() {
         model!!.oddButtons.observe(this) {
             var currentBetIndex = model!!.currentBetIndex.value
             var jslog = model!!.jslog.value
+            var stake = sharedPref!!.getString("stake","200")
+            var currentBetIndexOdds = model!!.currentBetIndexOdds.value
             runOnUiThread {
-                oddStatus!!.text = "Buttons:$it; Index:$currentBetIndex; $jslog"
+                oddStatus!!.text = "Buttons:$it; Index:$currentBetIndex; Odds:$currentBetIndexOdds; Stake:$stake; $jslog"
             }
         }
         model!!.currentBetIndex.observe(this) {
             var oddButtons = model!!.oddButtons.value
             var jslog = model!!.jslog.value
+            var stake = sharedPref!!.getString("stake","200")
+            var currentBetIndexOdds = model!!.currentBetIndexOdds.value
             runOnUiThread {
-                oddStatus!!.text = "Buttons:$oddButtons; Index:$it; $jslog"
+                oddStatus!!.text = "Buttons:$oddButtons; Index:$it; Odds:$currentBetIndexOdds; Stake:$stake; $jslog"
             }
             model!!.sendCommand(AutomationObject("bet","click_bet", arrayOf(it)))
         }
         model!!.jslog.observe(this) {
             var oddButtons = model!!.oddButtons.value
             var currentBetIndex = model!!.currentBetIndex.value
+            var stake = sharedPref!!.getString("stake","200")
+            var currentBetIndexOdds = model!!.currentBetIndexOdds.value
             runOnUiThread {
-                oddStatus!!.text = "Buttons:$oddButtons; Index:$currentBetIndex; $it"
+                oddStatus!!.text = "Buttons:$oddButtons; Index:$currentBetIndex; Odds:$currentBetIndexOdds; Stake:$stake; $it"
+            }
+        }
+        model!!.currentBetIndexOdds.observe(this) {
+            var oddButtons = model!!.oddButtons.value
+            var jslog = model!!.jslog.value
+            var currentBetIndex = model!!.currentBetIndex.value
+            var stake = sharedPref!!.getString("stake","200")
+            runOnUiThread {
+                oddStatus!!.text = "Buttons:$oddButtons; Index:$currentBetIndex; Odds:$it; Stake:$stake; $jslog"
             }
         }
         model!!.createConnection(sharedPref!!)
@@ -127,10 +143,14 @@ class SiteActivity : AppCompatActivity() {
         fun buttonCount(buttons: Int){
             model!!.oddButtons.postValue(buttons)
         }
+        @JavascriptInterface
+        fun getOdds(odds: String){
+            model!!.currentBetIndexOdds.postValue(odds)
+        }
     }
 
     private fun onClickBet(automationEvents: AutomationEvents) {
-        placeBet()
+        model!!.sendCommand(AutomationObject("bet","place_bet", arrayOf()))
     }
 
     private fun placeBet() {
@@ -169,9 +189,45 @@ class SiteActivity : AppCompatActivity() {
                 model!!.sendCommand(AutomationObject("bet","confirm_bet", arrayOf()))
             }
             KeyEvent.KEYCODE_VOLUME_DOWN -> {
-                placeBet()
+                model!!.sendCommand(AutomationObject("bet","place_bet", arrayOf()))
             }
         }
         return true
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.lambomenu,menu)
+
+        model!!.connected.observe(this){
+            if (it){
+                menu.getItem(1).setIcon(R.mipmap.reset_green_round)
+            } else {
+                menu.getItem(1).setIcon(R.mipmap.reset_red_round)
+            }
+        }
+
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.preferencesBtn -> {
+                openConfig()
+            }
+
+            R.id.reconnectBtn -> {
+                model!!.createConnection(sharedPref!!)
+            }
+
+            R.id.reloadBrowserBtn -> {
+                webView!!.reload()
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun openConfig(){
+        val intent = Intent(this,ConfigActivity::class.java)
+        startActivity(intent)
     }
 }
