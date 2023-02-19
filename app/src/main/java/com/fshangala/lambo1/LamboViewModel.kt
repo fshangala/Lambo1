@@ -18,6 +18,8 @@ class LamboViewModel : ViewModel() {
     var currentBetIndex = MutableLiveData<String>("")
     var currentBetIndexOdds = MutableLiveData<String>("")
     var jslog = MutableLiveData<String>("")
+    var apiResponse = MutableLiveData<String>("")
+    var apiResponseError = MutableLiveData<String>("")
 
     fun createConnection(sharedPref: SharedPreferences){
         connectionStatus.value = "Connecting..."
@@ -33,8 +35,8 @@ class LamboViewModel : ViewModel() {
             appClient.newWebSocket(appRequest,object: WebSocketListener(){
                 override fun onOpen(webSocket: WebSocket, response: Response) {
                     appSocket = webSocket
-                    val devicetype = "Brand:${Build.BRAND};Model:${Build.MODEL};Android:${Build.VERSION.RELEASE}"
-                    webSocket.send("{\"event_type\":\"connection\",\"event\":\"phone_connected\",\"args\":[${devicetype}],\"kwargs\":{}}")
+                    val devicetype = "${Build.ID}->Model:${Build.MODEL};Android:${Build.VERSION.RELEASE}"
+                    webSocket.send("{\"event_type\":\"connection\",\"event\":\"phone_connected\",\"args\":[\"${devicetype}\"],\"kwargs\":{}}")
                     connectionStatus.postValue("Connected!")
                     connected.postValue(true)
                 }
@@ -74,5 +76,29 @@ class LamboViewModel : ViewModel() {
         } else {
             connectionStatus.value = "Failed! You are disconnected!"
         }
+    }
+
+    fun getRequest(sharedPref: SharedPreferences, endpoint:String = "/"){
+        val hostIp = sharedPref.getString("hostIp","13.233.109.76")
+        val hostPort = sharedPref.getInt("hostPort",80).toString()
+
+        val host = "http://$hostIp:$hostPort/api$endpoint"
+        val appRequest = Request.Builder().url(host).get().build()
+        val call = appClient.newCall(appRequest)
+
+        val thread = Thread {
+            try {
+                val response = call.execute()
+                if (response.code == 200) {
+                    apiResponse.postValue(response.body!!.string())
+                } else {
+                    apiResponseError.postValue(response.body!!.string())
+                }
+            } catch(ex:Exception) {
+                apiResponseError.postValue(ex.message)
+            }
+        }
+        thread.start()
+
     }
 }

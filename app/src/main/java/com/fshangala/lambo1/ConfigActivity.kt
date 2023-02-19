@@ -60,8 +60,8 @@ class ConfigActivity : AppCompatActivity() {
         editSharedPref.putInt("hostPort",hostPort.text.toString().toInt())
         editSharedPref.putString("hostCode",hostCode.text.toString())
         editSharedPref.apply()
-        openMain()
-        //finish()
+
+        finish()
     }
 
     private fun openMain(){
