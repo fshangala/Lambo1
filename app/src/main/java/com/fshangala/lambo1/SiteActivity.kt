@@ -5,9 +5,11 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.util.Log
 import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -15,6 +17,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.snackbar.Snackbar
 import java.util.*
 
 class SiteActivity : AppCompatActivity() {
@@ -24,7 +27,7 @@ class SiteActivity : AppCompatActivity() {
     private var oddStatus: TextView? = null
     var sharedPref: SharedPreferences? = null
     var toast: Toast? = null
-    var betSite: BetSite? = null
+    var betSite: GeneralBetSite? = null
     private val buttonsTimer = Timer("buttonsTimer",true)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,11 +46,30 @@ class SiteActivity : AppCompatActivity() {
         masterStatus = findViewById(R.id.status)
         oddStatus = findViewById(R.id.odd)
 
-        betSite = BetSite(sharedPref!!.getString("betSite","laser247.com")!!)
-        startBrowser()
+        //betSite = BetSite(sharedPref!!.getString("betSite","laser247.com")!!)
+        //startBrowser()
 
-        buttonsTimer.scheduleAtFixedRate(UpdateButton(),0,1000)
+        //buttonsTimer.scheduleAtFixedRate(UpdateButton(),0,1000)
 
+        model!!.getRequest(sharedPref!!,"/betsite/")
+        model!!.apiResponse.observe(this) {
+            if (it != ""){
+                val betSiteList = BetSiteList(it)
+                val betSiteData = betSiteList.list[sharedPref!!.getInt("betSiteIndex",0)]
+                betSite = GeneralBetSite(betSiteData)
+                Log.d("JSON",betSite!!.eventListenerScript())
+                startBrowser()
+                buttonsTimer.scheduleAtFixedRate(UpdateButton(),0,1000)
+            }
+        }
+        model!!.apiResponseError.observe(this){
+            if(it != ""){
+                Snackbar.make(findViewById(R.id.parentLayout),it, Snackbar.LENGTH_INDEFINITE).
+                setAction("Retry", View.OnClickListener {
+                    model!!.getRequest(sharedPref!!,"/betsite/")
+                }).show()
+            }
+        }
         model!!.connectionStatus.observe(this) {
             toast = Toast.makeText(this,it,Toast.LENGTH_SHORT)
             toast!!.show()
@@ -128,7 +150,7 @@ class SiteActivity : AppCompatActivity() {
         override fun run() {
             runOnUiThread {
                 webView!!.evaluateJavascript(betSite!!.eventListenerScript()) {
-                    model!!.jslog.postValue(it)
+                    //model!!.jslog.postValue(it)
                 }
             }
         }
@@ -157,7 +179,7 @@ class SiteActivity : AppCompatActivity() {
         val stake = sharedPref!!.getString("stake", "200")
 
         webView!!.evaluateJavascript(betSite!!.placeBetScript(stake.toString().toDouble())){
-            model!!.jslog.postValue(it)
+            model!!.jslog.postValue("PlaceBet")
         }
     }
 
@@ -165,7 +187,7 @@ class SiteActivity : AppCompatActivity() {
         val betindex = model!!.currentBetIndex.value
 
         webView!!.evaluateJavascript(betSite!!.comfirmBetScript(betindex.toString().toInt())) {
-            model!!.jslog.postValue(it)
+            model!!.jslog.postValue("ConfirmBet")
         }
     }
 
