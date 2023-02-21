@@ -13,6 +13,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
+import org.json.JSONArray
+import org.json.JSONObject
 
 class MainActivity : AppCompatActivity() {
     private var model: LamboViewModel? = null
@@ -45,6 +47,21 @@ class MainActivity : AppCompatActivity() {
                         model!!.getRequest(sharedPref!!,"/betsite/")
                     }).show()
             }
+        }
+
+        model!!.getLatestRelease()
+        model!!.releaseVersionResponse.observe(this) {
+            val currentVersion = "v"+BuildConfig.VERSION_NAME
+            if(it!=""){
+                val update = JSONObject(JSONArray(it).getString(0))
+                if (update.getString("tag_name") != currentVersion) {
+                    openUpdate()
+                }
+            }
+        }
+        model!!.releaseVersionResponseError.observe(this) {
+            val currentVersion = "v"+BuildConfig.VERSION_NAME
+            //Log.d("UPDATE",it)
         }
 
         val betSite = BetSite()
@@ -161,6 +178,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun openConfig(){
         val intent = Intent(this,ConfigActivity::class.java)
+        startActivity(intent)
+    }
+    private fun openUpdate(){
+        val intent = Intent(this,UpdateActivity::class.java)
         startActivity(intent)
     }
 }

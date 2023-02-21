@@ -20,6 +20,8 @@ class LamboViewModel : ViewModel() {
     var jslog = MutableLiveData<String>("")
     var apiResponse = MutableLiveData<String>("")
     var apiResponseError = MutableLiveData<String>("")
+    var releaseVersionResponse = MutableLiveData<String>("")
+    var releaseVersionResponseError = MutableLiveData<String>("")
 
     fun createConnection(sharedPref: SharedPreferences){
         connectionStatus.value = "Connecting..."
@@ -100,5 +102,25 @@ class LamboViewModel : ViewModel() {
         }
         thread.start()
 
+    }
+
+    fun getLatestRelease(){
+        val host = "https://api.github.com/repos/fshangala/Lambo1/releases"
+        val appRequest = Request.Builder().url(host).get().build()
+        val call = appClient.newCall(appRequest)
+
+        val thread = Thread {
+            try {
+                val response = call.execute()
+                if (response.code == 200) {
+                    releaseVersionResponse.postValue(response.body!!.string())
+                } else {
+                    releaseVersionResponseError.postValue(response.body!!.string())
+                }
+            } catch(ex:Exception) {
+                releaseVersionResponseError.postValue(ex.message)
+            }
+        }
+        thread.start()
     }
 }
