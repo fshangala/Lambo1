@@ -35,7 +35,7 @@ class GeneralBetSite(val betSiteData: BetSiteData) {
     }
     fun comfirmBetScript(betIndex: Int): String {
         return initScript() +
-                "document.querySelector(betslip_buttons).click();"
+                "document.querySelectorAll(betslip_buttons)[confirm_button].click();"
     }
     fun eventListenerScript(): String {
         return initScript() +
