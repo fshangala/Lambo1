@@ -33,7 +33,7 @@ class GeneralBetSite(val betSiteData: BetSiteData) {
                 "    inputElements[alt_stake_input].dispatchEvent(new Event('change', { bubbles: true}));\n" +
                 "}"
     }
-    fun comfirmBetScript(betIndex: Int): String {
+    fun comfirmBetScript(): String {
         return initScript() +
                 "document.querySelectorAll(betslip_buttons)[confirm_button].click();"
     }
