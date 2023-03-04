@@ -110,18 +110,16 @@ class SiteActivity : AppCompatActivity() {
             var currentBetIndex = model!!.currentBetIndex.value
             var jslog = model!!.jslog.value
             var stake = sharedPref!!.getString("stake","200")
-            var currentBetIndexOdds = model!!.currentBetIndexOdds.value
             runOnUiThread {
-                oddStatus!!.text = "Buttons:$it; Index:$currentBetIndex; Odds:$currentBetIndexOdds; Stake:$stake; $jslog"
+                oddStatus!!.text = "Buttons:$it; Index:$currentBetIndex; Stake:$stake; $jslog"
             }
         }
         model!!.currentBetIndex.observe(this) {
             var oddButtons = model!!.oddButtons.value
             var jslog = model!!.jslog.value
             var stake = sharedPref!!.getString("stake","200")
-            var currentBetIndexOdds = model!!.currentBetIndexOdds.value
             runOnUiThread {
-                oddStatus!!.text = "Buttons:$oddButtons; Index:$it; Odds:$currentBetIndexOdds; Stake:$stake; $jslog"
+                oddStatus!!.text = "Buttons:$oddButtons; Index:$it; Stake:$stake; $jslog"
             }
             model!!.sendCommand(AutomationObject("bet","click_bet", arrayOf(it)))
         }
@@ -129,18 +127,8 @@ class SiteActivity : AppCompatActivity() {
             var oddButtons = model!!.oddButtons.value
             var currentBetIndex = model!!.currentBetIndex.value
             var stake = sharedPref!!.getString("stake","200")
-            var currentBetIndexOdds = model!!.currentBetIndexOdds.value
             runOnUiThread {
-                oddStatus!!.text = "Buttons:$oddButtons; Index:$currentBetIndex; Odds:$currentBetIndexOdds; Stake:$stake; $it"
-            }
-        }
-        model!!.currentBetIndexOdds.observe(this) {
-            var oddButtons = model!!.oddButtons.value
-            var jslog = model!!.jslog.value
-            var currentBetIndex = model!!.currentBetIndex.value
-            var stake = sharedPref!!.getString("stake","200")
-            runOnUiThread {
-                oddStatus!!.text = "Buttons:$oddButtons; Index:$currentBetIndex; Odds:$it; Stake:$stake; $jslog"
+                oddStatus!!.text = "Buttons:$oddButtons; Index:$currentBetIndex; Stake:$stake; $it"
             }
         }
         model!!.createConnection(sharedPref!!)
