@@ -172,9 +172,7 @@ class SiteActivity : AppCompatActivity() {
     }
 
     private fun confirmBet() {
-        val betindex = model!!.currentBetIndex.value
-
-        webView!!.evaluateJavascript(betSite!!.comfirmBetScript(betindex.toString().toInt())) {
+        webView!!.evaluateJavascript(betSite!!.comfirmBetScript()) {
             model!!.jslog.postValue("ConfirmBet")
         }
     }
